@@ -1,6 +1,8 @@
 package com.nikki.taskmanager.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,9 +22,12 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Title is mandatory")
+    @Size(max = 100, message = "Title can be upto 100 characters")
+    @Column(nullable = false, length = 100)
     private String title;
 
+    @Size(max = 200, message = "Description can be upto 200 characters")
     @Column(length = 200)
     private String description;
 
