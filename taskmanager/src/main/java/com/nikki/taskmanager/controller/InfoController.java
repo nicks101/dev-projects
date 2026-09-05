@@ -1,6 +1,6 @@
 package com.nikki.taskmanager.controller;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.nikki.taskmanager.config.AppProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,18 +13,18 @@ import java.util.Map;
 @RequestMapping("/api/v1/info")
 public class InfoController {
 
-    @Value("${app.name}")
-    private String appName;
+    private final AppProperties appProperties;
 
-    @Value("${app.version}")
-    private String appVersion;
+    public InfoController(AppProperties appProperties) {
+        this.appProperties = appProperties;
+    }
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAppInfo() {
         Map<String, Object> response = new HashMap<>();
 
-        response.put("appName", appName);
-        response.put("appVersion", appVersion);
+        response.put("appName", appProperties.getName());
+        response.put("appVersion", appProperties.getVersion());
 
         return ResponseEntity.ok(response);
     }
