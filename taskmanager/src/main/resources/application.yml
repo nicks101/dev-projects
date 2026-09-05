@@ -21,3 +21,8 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+# App Info
+app:
+  name: Task Manager
+  version: 1.0.0
