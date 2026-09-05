@@ -1,6 +1,7 @@
 package com.nikki.taskmanager.controller;
 
-import com.nikki.taskmanager.entity.Task;
+import com.nikki.taskmanager.dto.TaskRequest;
+import com.nikki.taskmanager.dto.TaskResponse;
 import com.nikki.taskmanager.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,24 +21,24 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> getAllTasks() {
+    public List<TaskResponse> getAllTasks() {
         return taskService.getAllTasks();
     }
 
     @GetMapping("/{id}")
-    public Task getTaskById(@PathVariable Long id) {
+    public TaskResponse getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
-        Task savedTask = taskService.createTask(task);
+    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest task) {
+        TaskResponse savedTask = taskService.createTask(task);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
     }
 
     @PutMapping("/{id}")
-    public Task updateTask(@PathVariable Long id,
-                           @Valid @RequestBody Task updatedTask) {
+    public TaskResponse updateTask(@PathVariable Long id,
+                                   @Valid @RequestBody TaskRequest updatedTask) {
         return taskService.updateTask(id, updatedTask);
     }
 
@@ -48,12 +49,12 @@ public class TaskController {
     }
 
     @GetMapping("/search")
-    public List<Task> searchTaskByTitle(@RequestParam String title) {
+    public List<TaskResponse> searchTaskByTitle(@RequestParam String title) {
         return taskService.searchTaskByTitle(title);
     }
 
     @GetMapping("/completed/{status}")
-    public List<Task> getTasksByCompletions(@PathVariable String status) {
+    public List<TaskResponse> getTasksByCompletions(@PathVariable String status) {
         return taskService.getTasksByCompletionStatus(Boolean.parseBoolean(status));
     }
 }

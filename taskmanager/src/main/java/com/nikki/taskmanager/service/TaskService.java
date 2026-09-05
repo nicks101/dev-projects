@@ -1,44 +1,48 @@
 package com.nikki.taskmanager.service;
 
+import com.nikki.taskmanager.dto.TaskRequest;
+import com.nikki.taskmanager.dto.TaskResponse;
 import com.nikki.taskmanager.entity.Task;
 import com.nikki.taskmanager.exception.TaskNotFoundException;
+import com.nikki.taskmanager.mapper.TaskMapper;
 import com.nikki.taskmanager.repository.TaskRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
+        this.taskMapper = taskMapper;
     }
 
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<TaskResponse> getAllTasks() {
+        return taskRepository.findAll().stream().map(taskMapper::toResponse).toList();
     }
 
-    public Task getTaskById(Long id) {
-        return taskRepository.findById(id)
+    public TaskResponse getTaskById(Long id) {
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
+        return taskMapper.toResponse(task);
     }
 
-    public Task createTask(Task task) {
-        return taskRepository.save(task);
+    public TaskResponse createTask(TaskRequest task) {
+        Task entityTask = taskMapper.toEntity(task);
+        return taskMapper.toResponse(taskRepository.save(entityTask));
     }
 
-    public Task updateTask(Long id, Task updatedTask) {
+    public TaskResponse updateTask(Long id, TaskRequest updatedTask) {
         final Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
-        task.setTitle(updatedTask.getTitle());
-        task.setDescription(updatedTask.getDescription());
-        task.setCompleted(updatedTask.getCompleted());
-        return taskRepository.save(task);
 
+        taskMapper.updateEntityFromRequest(task, updatedTask);
+        return taskMapper.toResponse(taskRepository.save(task));
     }
 
     public void deleteTask(Long id) {
@@ -46,11 +50,13 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
-    public List<Task> searchTaskByTitle(String title) {
-        return taskRepository.findByTitleContainingIgnoreCase(title);
+    public List<TaskResponse> searchTaskByTitle(String title) {
+        return taskRepository.findByTitleContainingIgnoreCase(title)
+                .stream().map(taskMapper::toResponse).toList();
     }
 
-    public List<Task> getTasksByCompletionStatus(Boolean status) {
-        return taskRepository.findByCompleted(status);
+    public List<TaskResponse> getTasksByCompletionStatus(Boolean status) {
+        return taskRepository.findByCompleted(status)
+                .stream().map(taskMapper::toResponse).toList();
     }
 }
