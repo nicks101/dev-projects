@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: taskmanager
+
+  #H2 DB Configurator
+  datasource:
+    url: jdbc:h2:mem:taskdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+
+  jpa:
+    # NOTE: Update for local data only. For production, there are other tools. Required for migration and more customization
+    hibernate:
+      ddl-auto: update
+    # NOTE: Update for local data only. For production, no sensitive data in prod
+    show-sql: true
+
+  # H2 Console Configuration (UI for DB)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
